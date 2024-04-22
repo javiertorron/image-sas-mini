@@ -14,6 +14,7 @@
           <label for="password" class="form-label">Contraseña</label>
           <input type="password" class="form-control" id="password" placeholder="Contraseña">
         </div>
+        <p class="text-danger mt-2" *ngIf="loginError">Usuario / contraseña incorrecto</p>
         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
       </form>
     </div>
