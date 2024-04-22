@@ -3,3 +3,6 @@ uvicorn
 asyncpg
 python-multipart
 Pillow
+passlib
+pydantic
+jose
