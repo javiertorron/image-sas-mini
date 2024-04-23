@@ -1,31 +1,15 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_DB: mini_sas_master
-      POSTGRES_USER: mini_sas_user
-      POSTGRES_PASSWORD: 5x3RoNi0oRUL9jV2jMvK
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "80:80"
+      - "4000:4000"
 
   backend:
     build:
       context: ./backend
     ports:
       - "8000:8000"
-    depends_on:
-      - postgres
-
-volumes:
-  postgres_data:

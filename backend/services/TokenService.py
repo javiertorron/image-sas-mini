@@ -1,6 +1,7 @@
 # Configuración de autenticación
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+import bcrypt
 
 from exceptions.ExpiredTokenException import ExpiredTokenException
 from exceptions.UnauthorizedException import UnauthorizedException
@@ -44,3 +45,14 @@ def decode_access_token(token: str):
         return None
     except JWTError:
         return None
+
+
+def encrypt_password(password: str) -> str:
+    password_bytes = password.encode('utf-8')
+
+    # Generar el salt y hashear la contraseña.
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password_bytes, salt)
+
+    # Devolver la contraseña hasheada en formato de cadena para almacenar en la base de datos.
+    return hashed_password.decode('utf-8')

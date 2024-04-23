@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from PIL import Image
 import os
 
-from models import UserModel
+from models.UserModel import UserModel
 
 from services.UserMediaService import UserMediaService
 

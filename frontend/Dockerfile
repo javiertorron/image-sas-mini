@@ -1,21 +1,12 @@
-# Etapa de compilación
-FROM node:20 as build
+FROM node:20-alpine as build
+WORKDIR /app/src
+COPY package*.json ./
+RUN npm ci
+COPY . ./
+RUN npm run build --prod
 
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-
-RUN npm install
-
-COPY . .
-
-RUN npm run build
-
-# Etapa de producción
-FROM nginx:alpine
-
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+FROM node:20-alpine
+WORKDIR /usr/app
+COPY --from=build /app/src/dist/frontend ./
+CMD node server/server.mjs
+EXPOSE 4000

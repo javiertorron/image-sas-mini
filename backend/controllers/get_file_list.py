@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from models import UserModel
+from models.UserModel import UserModel
 from services.UserMediaService import UserMediaService
 from services.AuthenticationService import get_current_user
 

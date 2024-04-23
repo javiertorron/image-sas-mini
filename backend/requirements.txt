@@ -5,4 +5,5 @@ python-multipart
 Pillow
 passlib
 pydantic
-jose
+python-jose
+bcrypt

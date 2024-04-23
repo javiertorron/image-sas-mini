@@ -2,16 +2,19 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
+from dtos.LoginRequestDTO import LoginRequestDTO
 from services.AuthenticationService import authenticate
-from services.TokenService import get_access_token_expiration, create_access_token
+from services.TokenService import get_access_token_expiration, create_access_token, encrypt_password
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 router = APIRouter()
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate(form_data.username, form_data.password)
+async def login_for_access_token(form_data: LoginRequestDTO):
+    hashed_password = encrypt_password(form_data.password)
+    print(f"Hashed_Password: {hashed_password}")
+    user = authenticate(form_data.username, hashed_password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

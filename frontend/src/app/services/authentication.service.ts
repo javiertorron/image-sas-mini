@@ -1,51 +1,37 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { TokenResponseDTO } from '../dtos/token-response.dto';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private tokenSubject: BehaviorSubject<string | null>;
-  public token$: Observable<string | null>;
-  private typeSubject: BehaviorSubject<string | null>;
-  public type$: Observable<string | null>;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {
-    this.tokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('token'));
-    this.typeSubject = new BehaviorSubject<string | null>(localStorage.getItem('type'));
-    this.token$ = this.tokenSubject.asObservable();
-    this.type$ = this.typeSubject.asObservable();
-  }
-
-  public get tokenValue(): string | null {
-    return this.tokenSubject.value;
+  constructor(private localStorageService: LocalStorageService) {
   }
 
   authenticate(username: string, password: string): Observable<TokenResponseDTO> {
-    return this.http.post<TokenResponseDTO>('http://backend:8000/token', { username, password });
+    return this.http.post<TokenResponseDTO>('http://localhost:8000/token', { username, password });
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    this.tokenSubject.next(null);
+    this.localStorageService.removeItem('token');
+    this.localStorageService.removeItem('type');
   }
 
   storeToken(token: string, type: string): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('type', type);
-    this.tokenSubject.next(token);
-    this.typeSubject.next(type);
+    this.localStorageService.setItem('token', token);
+    this.localStorageService.setItem('type', type);
   }
 
-  isLoggedIn(): Observable<boolean> {
-    return this.tokenSubject.asObservable().pipe(
-      map(token => !!token)
-    );
+  isLoggedIn(): boolean {
+    return this.localStorageService.getItem('token') != null && this.localStorageService.getItem('type') != null
   }
 
   getTokenHeaderString(): string | null {
-    return localStorage.getItem('type') + ' ' + localStorage.getItem('token');
+    return this.localStorageService.getItem('type') + ' ' + this.localStorageService.getItem('token');
   }
 }

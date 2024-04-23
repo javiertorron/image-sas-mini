@@ -20,20 +20,26 @@ import { Router } from '@angular/router';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  username: string = ""
-  password: string = ""
+  username: string
+  password: string
   loginError: boolean = false
 
-  constructor(private authService: AuthenticationService, private router: Router) {}
+  constructor(private authService: AuthenticationService, private router: Router) {
+    this.username = ""
+    this.password = ""
+  }
 
   login = () => {
     this.authService.authenticate(this.username, this.password).subscribe({
       next: (response: TokenResponseDTO) => {
+        console.log("Response from backend")
+        console.log(JSON.stringify(response))
         this.authService.storeToken(response.token, response.type)
         this.router.navigate(['/image-list'])
       },
       error: (error: any) => {
         this.loginError = true
+        console.log(error)
       }
     });
   }
