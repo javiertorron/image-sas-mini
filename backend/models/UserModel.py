@@ -7,4 +7,4 @@ class UserModel(BaseModel):
     email: str
     full_name: str
     disabled: bool = None
-    id: str
+    id: int

@@ -1,33 +1,6 @@
-<div class="image-list-container">
-  <mat-card class="image-list-card">
-    <mat-card-header>
-      <mat-card-title>Lista de Imágenes</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <!-- Aquí irá la lista de imágenes -->
-      <div *ngFor="let image of images">
-        <img [src]="image.url" alt="Imagen">
-      </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="showUploadForm()">Subir Imagen</button>
-    </mat-card-actions>
-  </mat-card>
-
-  <!-- Formulario para subir imágenes -->
-  <mat-card *ngIf="showUploadFormFlag" class="upload-form-card">
-    <mat-card-header>
-      <mat-card-title>Subir Nueva Imagen</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form class="upload-form">
-        <mat-form-field appearance="fill">
-          <mat-label>URL de la Imagen</mat-label>
-          <input matInput placeholder="URL de la Imagen" [(ngModel)]="newImageUrl">
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" (click)="uploadImage()">Subir</button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+<div class="container">
+  <h2>Mis imágenes</h2>
+  <div class="image-container">
+    <img *ngFor="let image of images" [src]="loadImage(image)" alt="Image">
+  </div>
 </div>

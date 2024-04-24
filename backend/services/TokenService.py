@@ -1,7 +1,10 @@
 # Configuración de autenticación
 from datetime import datetime, timedelta
+
+from fastapi import HTTPException
 from jose import JWTError, jwt
 import bcrypt
+from pydantic import ValidationError
 
 from exceptions.ExpiredTokenException import ExpiredTokenException
 from exceptions.UnauthorizedException import UnauthorizedException
@@ -29,7 +32,9 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 def decode_access_token(token: str):
     try:
+        print(f"--------------> Token: {token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
         # Verificamos si el token ha expirado
         expiration_timestamp = payload.get("exp")
         if expiration_timestamp is None or datetime.utcfromtimestamp(expiration_timestamp) < datetime.utcnow():
@@ -39,12 +44,18 @@ def decode_access_token(token: str):
             return None
         user_data = fake_users_db.get(username)
         return UserModel(**user_data)
-    except ExpiredTokenException:
+    except ExpiredTokenException as exp:
+        print(f"Expired token exception: {exp}")
         return None
     except UnauthorizedException:
+        print("Unsauthorized exception")
         return None
-    except JWTError:
+    except JWTError as jwtExp:
+        print(f"JWT error: {jwtExp}")
         return None
+    except ValidationError as val:
+        print(f"ValidationError: {val}")
+        raise HTTPException(status_code=400, detail=f"Invalid data: {val.errors()}")
 
 
 def encrypt_password(password: str) -> str:

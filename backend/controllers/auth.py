@@ -12,9 +12,7 @@ router = APIRouter()
 
 @router.post("/token")
 async def login_for_access_token(form_data: LoginRequestDTO):
-    hashed_password = encrypt_password(form_data.password)
-    print(f"Hashed_Password: {hashed_password}")
-    user = authenticate(form_data.username, hashed_password)
+    user = authenticate(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

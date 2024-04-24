@@ -1,0 +1,31 @@
+.container {
+    margin-top: 55px;
+    color: orangered;
+}
+
+.image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start; 
+    gap: 10px; 
+}
+
+.image-container img {
+    flex: 1 1 200px; 
+    max-width: 100%; 
+    height: auto; 
+}
+
+/* my-component.component.css */
+.no-images-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-images-container img {
+    width: 400px;
+    height: 400px;
+    object-fit: contain; /* Asegura que la imagen se ajuste sin perder su proporción */
+}

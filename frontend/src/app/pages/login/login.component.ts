@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, afterRender } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { TokenResponseDTO } from '../../dtos/token-response.dto';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -24,16 +25,24 @@ export class LoginComponent {
   password: string
   loginError: boolean = false
 
-  constructor(private authService: AuthenticationService, private router: Router) {
+  constructor(private authService: AuthenticationService, private router: Router, private storageService: StorageService) {
     this.username = ""
     this.password = ""
+  }
+
+  ngOnInit(): void {
+    // Verificar si hay un token en el localStorage
+    const loginStored = this.authService.isLoggedIn();
+
+    // Si hay un token, navegar a la pantalla de image-list
+    if (loginStored) {
+      this.router.navigate(['/image-list']);
+    }
   }
 
   login = () => {
     this.authService.authenticate(this.username, this.password).subscribe({
       next: (response: TokenResponseDTO) => {
-        console.log("Response from backend")
-        console.log(JSON.stringify(response))
         this.authService.storeToken(response.token, response.type)
         this.router.navigate(['/image-list'])
       },

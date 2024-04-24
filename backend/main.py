@@ -2,12 +2,13 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware as CORSMiddleware
 
-from controllers import auth, get_file_list, save_image, get_image
+from controllers import auth, get_image_list, save_image, get_image
+from middleware.custom_cors_middleware import CustomCORSMiddleware
 
 app = FastAPI()
 
 app.include_router(auth.router)
-app.include_router(get_file_list.router)
+app.include_router(get_image_list.router)
 app.include_router(get_image.router)
 app.include_router(save_image.router)
 
@@ -18,11 +19,5 @@ origins = [
 ]
 
 app.add_middleware(
-
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["POST", "GET"],
-    allow_headers=["*"],
-    max_age=3600,
+    CustomCORSMiddleware
 )

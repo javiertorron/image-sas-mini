@@ -1,10 +1,13 @@
 # Mock de usuarios
 from fastapi import Depends
-from passlib.context import CryptContext
 import bcrypt
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
 from exceptions.UnauthorizedException import UnauthorizedException
 from mocks.DbMock import fake_users_db
 from services.TokenService import decode_access_token
+
+bearer_scheme = HTTPBearer()
 
 
 def authenticate(username: str, password: str):
@@ -16,7 +19,9 @@ def authenticate(username: str, password: str):
     :return:
     """
     user = fake_users_db.get(username)
+    print(f"Inicial: {password}")
     password_check = check_password(password, user["hashed_password"])
+
     if not user:
         return False
     if not password_check:
@@ -24,17 +29,16 @@ def authenticate(username: str, password: str):
     return user
 
 
-async def get_current_user(user: str = Depends(decode_access_token)):
-    if not user:
-        raise UnauthorizedException(detail="Unauthorized token")
-    return user
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
+    user = decode_access_token(credentials.credentials)
+    return user if user else None
 
 
-def check_password(password: str, hashed_password: str) -> bool:
-    # Convertir la contraseña y el hash almacenado a bytes.
-    password_bytes = password.encode('utf-8')
-    hashed_password_bytes = hashed_password.encode('utf-8')
-    print(f"Password: {password_bytes}")
-    print(f"Hash Password: {hashed_password_bytes}")
-    # Verificar la contraseña con el hash almacenado.
-    return bcrypt.checkpw(password_bytes, hashed_password_bytes)
+def get_hashed_password(plain_text_password):
+    return bcrypt.hashpw(plain_text_password.encode(), bcrypt.gensalt())
+
+
+def check_password(plain_text_password, hashed_password):
+    print(f"Verificando contraseña:")
+    print(f"Recibimos {plain_text_password} y verificamos contra {hashed_password}")
+    return bcrypt.checkpw(plain_text_password.encode(), hashed_password.encode())

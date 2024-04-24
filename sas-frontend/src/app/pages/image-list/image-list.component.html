@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="text-end">
+    <button role="button" class="btn btn-warning" (click)="logout()">Logout</button>
+  </div>
+  <h2>Mis imágenes <button role="button" class="btn btn-sm btn-success" (click)="logout()">+</button></h2>
+  <div *ngIf="images.length > 0" class="image-container">
+    <img *ngFor="let image of images" [src]="loadImage(image)" alt="Image">
+  </div>
+  <div *ngIf="images.length == 0" class="no-images-container">
+    <img src="/assets/no_images.webp" alt="No Images Available">
+  </div>
+  <div class="text-center">
+    <h4>No tienes imágenes</h4>
+    <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)" accept=".jpg,.png">
+    <p style="color: #222 !important;">Prueba a subir una pulsando en el botón <button role="button" class="btn btn-sm btn-outline-success" (click)="fileInput.click()">+</button></p>
+  </div>
+</div>
