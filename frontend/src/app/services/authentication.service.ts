@@ -26,38 +26,27 @@ export class AuthenticationService {
   }
 
   logout(): void {
-    this.token = "";
-    this.type = "";
-    if (this.isBrowser) {
-      this.localStorageService.clear();
-    }
+    this.localStorageService.setItem('token', '');
+    this.localStorageService.setItem('type', '');
   }
 
   storeToken(token: string, type: string): void {
-    this.token = token;
-    this.type = type;
-    if (this.isBrowser) {
-      this.localStorageService.setItem('authToken', token);
-      this.localStorageService.setItem('tokenType', type);
-    }
+    console.log("Stored")
+    this.localStorageService.setItem('token', token);
+    this.localStorageService.setItem('type', type);
+    console.log(`Type: ${this.localStorageService.getItem('type')}`)
+    console.log(`Token: ${this.localStorageService.getItem('token')}`)
   }
 
   isLoggedIn(): boolean {
-    if (this.isBrowser) {
-      this.token = this.localStorageService.getItem('authToken') || "";
-      this.type = this.localStorageService.getItem('tokenType') || "";
-    }
-    return this.token !== "" && this.type !== "";
+    const token = this.localStorageService.getItem('token') || "";
+    const type = this.localStorageService.getItem('type') || "";
+    return token !== "" && type !== "";
   }
 
   getTokenHeaderString(): string {
-    if (this.isBrowser) {
-      const token = this.localStorageService.getItem('authToken');
-      const type = this.localStorageService.getItem('tokenType');
-      if (token && type) {
-        return type + ' ' + token;
-      }
-    }
-    return "";
+    const token = this.localStorageService.getItem('token');
+    const type = this.localStorageService.getItem('type');
+    return type + ' ' + token;
   }
 }

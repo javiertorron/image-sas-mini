@@ -8,6 +8,9 @@ import { ImageModel } from '../../models/image.model';
 import { BackendService } from '../../services/backend.service';
 import { ImageListResponseDTO } from '../../dtos/image-list-response.dto';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { AuthenticationService } from '../../services/authentication.service';
+import { Router } from '@angular/router';
+import { UploadImageResponseDTO } from '../../dtos/upload-image-response.dto';
 
 @Component({
   selector: 'app-image-list',
@@ -26,10 +29,14 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class ImageListComponent {
   images: Array<ImageModel> = []
-  showUploadFormFlag: Boolean = false
-  newImageUrl: String = ""
+  selectedFile: File | null = null;
 
-  constructor(private backendService: BackendService, private sanitizer: DomSanitizer) {}
+  constructor(
+    private backendService: BackendService, 
+    private sanitizer: DomSanitizer, 
+    private authService: AuthenticationService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.backendService.getThumbnailList().subscribe({
@@ -41,10 +48,6 @@ export class ImageListComponent {
       }
     });
   }
-  
-  showUploadForm = () => {
-    this.showUploadFormFlag = !this.showUploadFormFlag 
-  }
 
   uploadImage = () => {
     alert("Upload image")
@@ -54,6 +57,44 @@ export class ImageListComponent {
     this.backendService.getImage(image.filename).subscribe(blob => {
       const url = URL.createObjectURL(blob);
       return this.sanitizer.bypassSecurityTrustUrl(url);
+    });
+  }
+
+  logout = () => {
+    this.authService.logout()
+    this.router.navigate(['/login'])
+  }
+
+  onFileSelected(event: any): void {
+    const element = event.currentTarget as HTMLInputElement;
+    let fileList: FileList | null = element.files;
+    if (fileList && fileList.length > 0) {
+      this.selectedFile = fileList[0];
+      this.add();
+    }
+  }
+
+  add(): void {
+    if (!this.selectedFile) {
+      alert('Please select a file.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile, this.selectedFile.name);
+
+    this.backendService.uploadImage(formData).subscribe({
+      next: (response:UploadImageResponseDTO) => {
+        if (response.filename) {
+          this.images.push(new ImageModel(response.filename));
+          console.log('File uploaded:', response.filename);
+        } else {
+          console.error('No filename returned from the server.');
+        }
+      },
+      error: (error) => {
+        console.error('Error uploading file:', error);
+      }
     });
   }
 }

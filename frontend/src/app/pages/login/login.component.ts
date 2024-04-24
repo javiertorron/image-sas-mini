@@ -26,8 +26,8 @@ export class LoginComponent {
   loginError: boolean = false
 
   constructor(private authService: AuthenticationService, private router: Router, private storageService: StorageService) {
-    this.username = ""
-    this.password = ""
+    this.username = "javier.torron"
+    this.password = "secretpassword"
   }
 
   ngOnInit(): void {
@@ -36,14 +36,14 @@ export class LoginComponent {
 
     // Si hay un token, navegar a la pantalla de image-list
     if (loginStored) {
-      this.router.navigate(['/image-list']);
+      // this.router.navigate(['/image-list']);
     }
   }
 
   login = () => {
     this.authService.authenticate(this.username, this.password).subscribe({
       next: (response: TokenResponseDTO) => {
-        this.authService.storeToken(response.token, response.type)
+        this.authService.storeToken(response.access_token, response.token_type)
         this.router.navigate(['/image-list'])
       },
       error: (error: any) => {

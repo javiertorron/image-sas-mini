@@ -16,3 +16,16 @@
     max-width: 100%; 
     height: auto; 
 }
+
+/* my-component.component.css */
+.no-images-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-images-container img {
+    width: 400px;
+    height: 400px;
+    object-fit: contain; /* Asegura que la imagen se ajuste sin perder su proporción */
+}
