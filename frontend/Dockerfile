@@ -1,5 +1,4 @@
-# Etapa de compilación
-FROM node:20 as build
+FROM node:14-alpine as build
 
 WORKDIR /app
 
@@ -11,11 +10,9 @@ COPY . .
 
 RUN npm run build
 
-# Etapa de producción
-FROM nginx:alpine
+FROM nginx:1.19-alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
+COPY --from=build /app/dist/frontend /usr/share/nginx/html
+EXPOSE 4000
 
 CMD ["nginx", "-g", "daemon off;"]
